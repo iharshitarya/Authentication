@@ -9,9 +9,11 @@ const SplashScreen = ({navigation}) => {
   });
 
   return (
+    
     <View style={styles.container}>
       <Text>SplashScreen</Text>
     </View>
+
   );
 };
 

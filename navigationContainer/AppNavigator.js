@@ -7,6 +7,7 @@ import Homescreen from '../screens/Homescreen';
 
 const Stack = createNativeStackNavigator();
 
+
 const AppNavigator = () => {
   return (
     <Stack.Navigator initialRouteName="Home">

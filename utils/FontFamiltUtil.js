@@ -12,4 +12,5 @@ export const FontFamilyUtil = {
     w800: { fontFamily: Platform.OS === 'ios' ? 'Urbanist' : 'Urbanist-ExtraBold', fontWeight: Platform.OS === 'ios' ? '800' : undefined },
     w900: { fontFamily: Platform.OS === 'ios' ? 'Urbanist' : 'Urbanist-Black', fontWeight: Platform.OS === 'ios' ? '900' : undefined }
 
+
 };

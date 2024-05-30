@@ -64,13 +64,14 @@ const Login = ({navigation}) => {
         navigation.navigate('Homescreen');
       } else {
         setLoading(false);
-        setWelcomeMessage(response.data.message); 
-        setVisibleModal(true);       }
+        setWelcomeMessage(response.data.message);
+        setVisibleModal(true);
+      }
     } catch (error) {
       console.log('error in login request', error);
       setLoading(false);
       setWelcomeMessage('An error occurred. Please try again.');
-      setVisibleModal(true); 
+      setVisibleModal(true);
     }
   };
 

@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {
   ActivityIndicator,
+  ImageBackground,
   Modal,
   Pressable,
   SafeAreaView,
@@ -13,6 +14,10 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import {FontFamilyUtil} from '../utils/FontFamiltUtil';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useDispatch} from 'react-redux';
+import {setLoggedIn} from '../redux/LoginSlice';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 const Login = ({navigation}) => {
   const [email, setEmail] = useState('');
@@ -21,6 +26,13 @@ const Login = ({navigation}) => {
   const [welcomeMessage, setWelcomeMessage] = useState('');
   const [visibleModal, setVisibleModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [secureText, setSecureText] = useState(true);
+
+  const toggleSecureTextEntry = () => {
+    setSecureText(!secureText);
+  };
+
+  const dispatch = useDispatch();
 
   const validateEmail = email => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -59,8 +71,13 @@ const Login = ({navigation}) => {
       );
 
       if (response.data.status === 200) {
+        dispatch(setLoggedIn({login: true}));
+        await AsyncStorage.setItem('isLoggedIn', 'true');
         setLoading(false);
-        navigation.navigate('Homescreen');
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'Homescreen'}],
+        });
       } else {
         setLoading(false);
         setWelcomeMessage(response.data.message);
@@ -79,17 +96,16 @@ const Login = ({navigation}) => {
       {loading ? (
         <View
           style={{
-            flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: '#ffffff',
+            flex: 1,
           }}>
           <ActivityIndicator size={'small'} color={'black'} />
           <Text>loading...</Text>
         </View>
       ) : (
         <LinearGradient
-          start={{x: 0.1, y: 0}}
+          start={{x: 1, y: 1}}
           end={{x: 1, y: 0}}
           colors={['#8E0E00', '#1F1C18']}
           style={styles.container}>
@@ -101,7 +117,7 @@ const Login = ({navigation}) => {
             <Text style={styles.formText}>Enter Your Email Id</Text>
             <TextInput
               placeholder="Email"
-              style={styles.textInputContainer}
+              style={{borderBottomWidth: 0.5, borderColor: '#ccc'}}
               value={email}
               onChangeText={text => setEmail(text)}
               keyboardType="email-address"
@@ -109,14 +125,29 @@ const Login = ({navigation}) => {
             {errors.email && (
               <Text style={styles.errorText}>{errors.email}</Text>
             )}
-            <Text style={styles.formText}>Password</Text>
-            <TextInput
-              placeholder="Password"
-              style={styles.textInputContainer}
-              value={password}
-              onChangeText={text => setPassword(text)}
-              secureTextEntry
-            />
+            <Text style={[styles.formText, {marginTop: 20}]}>Password</Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                borderBottomWidth: 0.5,
+                borderColor: '#ccc',
+              }}>
+              <TextInput
+                placeholder="Password"
+                style={{flex: 1}}
+                value={password}
+                onChangeText={text => setPassword(text)}
+                secureTextEntry={secureText}
+              />
+              <Entypo
+                name={secureText ? 'eye-with-line' : 'eye'}
+                size={22}
+                color={'black'}
+                style={{alignSelf: 'center'}}
+                onPress={toggleSecureTextEntry}
+              />
+            </View>
             {errors.password && (
               <Text style={styles.errorText}>{errors.password}</Text>
             )}
@@ -129,6 +160,23 @@ const Login = ({navigation}) => {
                 <Text style={styles.buttonText}>SIGN IN</Text>
               </Pressable>
             </LinearGradient>
+            <View
+              style={{
+                marginTop: 5,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <Text style={styles.bottomText}>
+                Don't have an account?{' '}
+                <Text
+                  style={{color: '#8E0E00', fontSize: 16}}
+                  onPress={() => {
+                    navigation.navigate('SignIn');
+                  }}>
+                  SignUp
+                </Text>
+              </Text>
+            </View>
           </View>
         </LinearGradient>
       )}
@@ -175,24 +223,25 @@ export default Login;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingVertical: 20,
   },
   formContainer: {
-    flex: 3,
     justifyContent: 'center',
     paddingHorizontal: 20,
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40,
     backgroundColor: '#ffffff',
+    marginHorizontal: 20,
+    marginTop: '20%',
+    paddingVertical: 40,
+    borderRadius: 15,
   },
   headingContainer: {
-    flex: 1,
+    // flex: 1,
+    marginTop: '20%',
+    alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 20,
-  },
-  textInputContainer: {
-    borderBottomWidth: 0.5,
-    borderColor: '#ccc',
-    marginBottom: 5,
+    // backgroundColor: 'blue',
+    marginBottom: 20,
   },
   formText: {
     color: '#8E0E00',
@@ -250,5 +299,11 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     marginVertical: 5,
     marginHorizontal: 20,
+  },
+  bottomText: {
+    color: 'black',
+    fontFamily: FontFamilyUtil.w500.fontFamily,
+    fontWeight: FontFamilyUtil.w500.fontWeight,
+    fontSize: 12,
   },
 });

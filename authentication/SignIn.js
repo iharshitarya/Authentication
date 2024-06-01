@@ -14,6 +14,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {FontFamilyUtil} from '../utils/FontFamiltUtil';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 const SignIn = ({navigation}) => {
   const [name, setName] = useState('');
@@ -23,10 +24,15 @@ const SignIn = ({navigation}) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [secureText, setSecureText] = useState(true);
 
   const validateEmail = email => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+  };
+
+  const toggleSecureTextEntry = () => {
+    setSecureText(!secureText);
   };
 
   const userSignUp = async () => {
@@ -93,7 +99,6 @@ const SignIn = ({navigation}) => {
       {loading == true ? (
         <View
           style={{
-            
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
@@ -104,13 +109,17 @@ const SignIn = ({navigation}) => {
         </View>
       ) : (
         <LinearGradient
-          start={{x: 0.1, y: 0}}
+          start={{x: 1, y: 1}}
           end={{x: 1, y: 0}}
           colors={['#8E0E00', '#1F1C18']}
           style={styles.container}>
-          <View style={styles.headingContainer}>
-            <Text style={styles.headingText}>Sign Up</Text>
-            <Text style={[styles.headingText, {fontSize: 18, marginTop: 10}]}>
+          <View
+            style={[
+              styles.headingContainer,
+              {alignItems: 'center', justifyContent: 'center'},
+            ]}>
+            <Text style={styles.headingText}>SignUp</Text>
+            <Text style={[styles.headingText, {fontSize: 18,}]}>
               Create your account
             </Text>
           </View>
@@ -121,7 +130,10 @@ const SignIn = ({navigation}) => {
                 placeholder="Enter Your Name"
                 style={styles.textInputContainer}
                 value={name}
-                onChangeText={text => setName(text)}
+                onChangeText={text => {
+                  setName(text);
+                  setErrors('');
+                }}
               />
               {errors.name && (
                 <Text style={styles.errorText}>{errors.name}</Text>
@@ -133,6 +145,7 @@ const SignIn = ({navigation}) => {
                 value={mobileNumber}
                 onChangeText={text => {
                   setMobileNumber(text);
+                  setErrors('');
                   if (text.length === 10) {
                     Keyboard.dismiss();
                   }
@@ -147,31 +160,68 @@ const SignIn = ({navigation}) => {
                 placeholder="Email"
                 style={styles.textInputContainer}
                 value={email}
-                onChangeText={text => setEmail(text)}
+                onChangeText={text => {
+                  setEmail(text);
+                  setErrors('');
+                }}
                 keyboardType="email-address"
               />
               {errors.email && (
                 <Text style={styles.errorText}>{errors.email}</Text>
               )}
               <Text style={styles.formText}>Password</Text>
-              <TextInput
-                placeholder="Password"
-                style={styles.textInputContainer}
-                value={password}
-                onChangeText={text => setPassword(text)}
-                secureTextEntry
-              />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  borderBottomWidth: 0.5,
+                  borderColor: '#ccc',
+                }}>
+                <TextInput
+                  placeholder="Password"
+                  style={{flex: 1}}
+                  value={password}
+                  onChangeText={text => {
+                    setPassword(text);
+                    setErrors('');
+                  }}
+                  secureTextEntry={secureText}
+                />
+                <Entypo
+                  name={secureText ? 'eye-with-line' : 'eye'}
+                  size={22}
+                  color={'black'}
+                  style={{alignSelf: 'center'}}
+                  onPress={toggleSecureTextEntry}
+                />
+              </View>
               {errors.password && (
                 <Text style={styles.errorText}>{errors.password}</Text>
               )}
               <Text style={styles.formText}>Confirm Password</Text>
-              <TextInput
-                placeholder="Confirm Password"
-                style={styles.textInputContainer}
-                value={confirmPassword}
-                onChangeText={text => setConfirmPassword(text)}
-                secureTextEntry
-              />
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  borderBottomWidth: 0.5,
+                  borderColor: '#ccc',
+                }}>
+                <TextInput
+                  placeholder="Confirm Password"
+                  // style={styles.textInputContainer}
+                  value={confirmPassword}
+                  onChangeText={text => setConfirmPassword(text)}
+                  secureTextEntry={secureText}
+                />
+                <Entypo
+                  name={secureText ? 'eye-with-line' : 'eye'}
+                  size={22}
+                  color={'black'}
+                  style={{alignSelf: 'center'}}
+                  onPress={toggleSecureTextEntry}
+                />
+              </View>
               {errors.confirmPassword && (
                 <Text style={styles.errorText}>{errors.confirmPassword}</Text>
               )}
@@ -212,13 +262,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   formContainer: {
-    flexGrow: 1,
+    // flexGrow: 1,
     justifyContent: 'center',
     paddingHorizontal: 20,
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40,
     backgroundColor: '#ffffff',
-    paddingVertical: 20,
+    paddingVertical: 40,
+    marginHorizontal: 20,
+    borderRadius: 15,
   },
   textInputContainer: {
     borderBottomWidth: 0.5,
